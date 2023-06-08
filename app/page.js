@@ -18,6 +18,20 @@ function Task({ text, selected, onSelect}) {
     )
 }
 
+function Create() {
+    function createItem() {
+        console.log("hi")
+    }
+    return (
+        <div className={styles.new_task}>
+            <input
+                    type="text"
+            />
+            <button onClick={createItem} >Create</button>
+        </div>
+    )
+}
+
 export default function Home() {
 
     const [items,setItems]=useState([
@@ -33,7 +47,7 @@ export default function Home() {
     }, [items]);
     function setItm(itm, id) {
         const i = itm.slice()
-        if(itm[id-1].done) {
+        if (itm[id-1].done) {
             i[id-1].done=false
         } else {
             i[id-1].done=true
@@ -41,11 +55,18 @@ export default function Home() {
         console.log(i)
         setItems(i)
     }
+
     return (
         <main className={styles.main}>
-            {items.map(e => {
-                return (<Task key={e.id} text={e.item} selected={e.done} onSelect={() => setItm(items,e.id)} />)
-            })}
+            <div className={styles.header}>To Do List</div>
+            <div className={styles.tasks_list}>
+                {items.map(e => {
+                    return (<Task key={e.id} text={e.item} selected={e.done} onSelect={() => setItm(items,e.id)} />)
+                })}
+            </div>
+            <Create />
         </main>
     )
 }
+
+
