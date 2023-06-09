@@ -3,7 +3,7 @@ import Image from 'next/image'
 import styles from './page.module.css'
 import {useState, useEffect} from "react";
 
-function Task({ text, selected, onSelect}) {
+function Task({ text, selected, onSelect, onDel}) {
     let classname;
     if (selected) {
         classname = styles.selected
@@ -11,32 +11,22 @@ function Task({ text, selected, onSelect}) {
         classname = ""
     }
     return (
-        <div onClick={onSelect} className={`${styles.task} ${classname}`}>
-              <i className={styles.checkbox}></i>
-              <label>{text}</label>
-        </div>
-    )
-}
-
-function Create() {
-    function createItem() {
-        console.log("hi")
-    }
-    return (
-        <div className={styles.new_task}>
-            <input
-                    type="text"
-            />
-            <button onClick={createItem} >Create</button>
+        <div className={styles.task_parent}>
+            <div onClick={onSelect} className={`${styles.task} ${classname}`}>
+                <i className={styles.checkbox}></i>
+                <label>{text}</label>
+            </div>
+            <div onClick={onDel} className={styles.delete}>
+                <img src="delete.svg" alt=""/>
+            </div>
         </div>
     )
 }
 
 export default function Home() {
 
-    const [items,setItems]=useState([
-        {id: 1, item: "item 1", done: false},
-        {id: 2, item: "item 2", done: true}])
+    const [items,setItems]=useState([])
+    const [input, setInput] = useState("")
     useEffect(() => {
         const data = window.localStorage.getItem('TASKS');
         if ( data !== null ) setItems(JSON.parse(data));
@@ -45,26 +35,45 @@ export default function Home() {
     useEffect(() => {
         window.localStorage.setItem('TASKS', JSON.stringify(items));
     }, [items]);
+    //update item when clicked (done / not done toggle)
     function setItm(itm, id) {
         const i = itm.slice()
-        if (itm[id-1].done) {
-            i[id-1].done=false
+        if (itm[id].done) {
+            i[id].done=false
         } else {
-            i[id-1].done=true
+            i[id].done=true
         }
         console.log(i)
         setItems(i)
     }
-
+    //create new task
+    function createItem() {
+        const i = items.slice()
+        const new_i= [...i, {item: input, done: false}]
+        setItems(new_i)
+    }
+    //delete a task
+    function deleteItem(id) {
+        const i = items.slice()
+        i.splice(id,1)
+        setItems(i)
+    }
     return (
         <main className={styles.main}>
             <div className={styles.header}>To Do List</div>
             <div className={styles.tasks_list}>
-                {items.map(e => {
-                    return (<Task key={e.id} text={e.item} selected={e.done} onSelect={() => setItm(items,e.id)} />)
+                {items.map((e, index,array) => {
+                    return (<Task key={index} text={e.item} selected={e.done} onSelect={() => setItm(items,index)} onDel={() => deleteItem(index)} />)
                 })}
             </div>
-            <Create />
+            <div className={styles.new_task}>
+                <input
+                    type="text"
+                    onChange={e => setInput(e.target.value)}
+                    value={input}
+                />
+                <button onClick={createItem} >Create</button>
+            </div>
         </main>
     )
 }
