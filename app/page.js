@@ -65,6 +65,7 @@ export default function Home() {
                 {items.map((e, index,array) => {
                     return (<Task key={index} text={e.item} selected={e.done} onSelect={() => setItm(items,index)} onDel={() => deleteItem(index)} />)
                 })}
+                <div className={styles.bottom_pad}></div>
             </div>
             <div className={styles.new_task}>
                 <input
@@ -72,7 +73,9 @@ export default function Home() {
                     onChange={e => setInput(e.target.value)}
                     value={input}
                 />
-                <button onClick={createItem} >Create</button>
+                <button onClick={createItem} >
+                    <img src="plus.svg" alt="create"/>
+                </button>
             </div>
         </main>
     )
